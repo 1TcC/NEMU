@@ -67,6 +67,28 @@ static int cmd_info(char *args){
 	return 0;
 }
 
+static int cmd_x(char *args){
+	uint32_t n;
+	uint32_t i;
+	swaddr_t addr;
+
+	if (args == NULL){
+		return 0;
+	}
+
+	if (sscanf(args, "%u %x", &n, &addr) != 2){
+		return 0;
+	}
+
+	for (i=0; i<n; i++){
+		printf("0x%08x: 0x%08x\n",
+                addr, swaddr_read(addr, 4));
+        addr += 4;
+	}
+	return 0;
+}
+
+
 static int cmd_help(char *args);
 
 static struct {
@@ -79,6 +101,7 @@ static struct {
 	{ "q", "Exit NEMU", cmd_q },
 	{ "si", "Single step", cmd_si },
 	{ "info", "Print register", cmd_info },
+	{ "x", "Scan memory", cmd_x },
 
 	/* TODO: Add more commands */
 
