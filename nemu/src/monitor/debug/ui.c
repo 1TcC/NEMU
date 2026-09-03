@@ -92,23 +92,24 @@ static int cmd_p(char *args){
 	bool success;
 	uint32_t result;
 
-	if (args == NULL){
+	printf("DEBUG A: entered cmd_p\n");
+
+	if(args == NULL){
 		return 0;
 	}
+
+	printf("DEBUG B: before expr\n");
+
 	result = expr(args, &success);
 
-	if (success){
+	printf("DEBUG C: after expr, success = %d, result = %u\n",
+			success, result);
+
+	if(success){
 		printf("%u\n", result);
 	}
+
 	return 0;
-
-	result = expr(args, &success);
-
-	printf("DEBUG: success = %d, result = %u\n", success, result);
-
-	if (success){
-		printf("%u\n", result);
-	}
 }
 
 static int cmd_help(char *args);
