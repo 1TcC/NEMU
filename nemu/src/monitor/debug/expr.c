@@ -105,6 +105,8 @@ static bool make_token(char *e) {
         				break;
 
     				case NUM:
+					case HEX:
+					case REG:
         				Assert(nr_token < 32, "too many tokens");
         				Assert(substr_len < 32, "number is too long");
 
@@ -173,13 +175,23 @@ static int check_parentheses(int p, int q) {
 
 static int get_precedence(int type) {
 	switch(type) {
+		case OR:
+			return 1;
+
+		case AND:
+			return 2;
+
+		case EQ:
+		case NEQ:
+			return 3;
+
 		case '+':
 		case '-':
-			return 1;
+			return 4;
 
 		case '*':
 		case '/':
-			return 2;
+			return 5;
 
 		default:
 			return -1;
@@ -250,17 +262,26 @@ static uint32_t eval(int p, int q, bool *success) {
 	}
 
 	if(p == q) {
-		if(tokens[p].type != NUM) {
-			*success = false;
-			return 0;
+		if(tokens[p].type == NUM) {
+			if(sscanf(tokens[p].str, "%u", &val) != 1) {
+				*success = false;
+				return 0;
+			}
+
+			return val;
 		}
 
-		if(sscanf(tokens[p].str, "%u", &val) != 1) {
-			*success = false;
-			return 0;
+		if(tokens[p].type == HEX) {
+			if(sscanf(tokens[p].str, "%x", &val) != 1) {
+				*success = false;
+				return 0;
+			}
+
+			return val;
 		}
 
-		return val;
+		*success = false;
+		return 0;
 	}
 
 	paren_ret = check_parentheses(p, q);
