@@ -92,16 +92,14 @@ static int cmd_p(char *args){
 	bool success;
 	uint32_t result;
 
-	if(args == NULL){
+	if (args == NULL){
 		return 0;
 	}
-
 	result = expr(args, &success);
 
-	if(success){
+	if (success){
 		printf("%u\n", result);
 	}
-
 	return 0;
 }
 

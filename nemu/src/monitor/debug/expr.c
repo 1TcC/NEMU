@@ -7,7 +7,7 @@
 #include <regex.h>
 
 enum {
-	NOTYPE = 256, EQ, NUM, NEG
+	NOTYPE = 256, EQ, NUM
 	/* TODO: Add more token types */
 
 };
@@ -169,21 +169,6 @@ static int get_precedence(int type) {
 	}
 }
 
-static void identify_negative() {
-	int i;
-
-	for(i = 0; i < nr_token; i ++) {
-		if(tokens[i].type == '-') {
-			if(i == 0 ||
-			   tokens[i - 1].type == '(' ||
-			   get_precedence(tokens[i - 1].type) != -1 ||
-			   tokens[i - 1].type == NEG) {
-				tokens[i].type = NEG;
-			}
-		}
-	}
-}
-
 static int find_dominant_operator(int p, int q) {
 	int i;
 	int op = -1;
@@ -260,18 +245,6 @@ static uint32_t eval(int p, int q, bool *success) {
 	op = find_dominant_operator(p, q);
 
 	if(op == -1) {
-		if(tokens[p].type == NEG) {
-			uint32_t val;
-
-			val = eval(p + 1, q, success);
-
-			if(!(*success)) {
-				return 0;
-			}
-
-			return 0 - val;
-		}
-
 		*success = false;
 		return 0;
 	}
@@ -315,8 +288,7 @@ uint32_t expr(char *e, bool *success) {
 		return 0;
 	}
 
-	identify_negative();
-
+	/* TODO: Insert codes to evaluate the expression. */
 	*success = true;
 	return eval(0, nr_token - 1, success);
 }
