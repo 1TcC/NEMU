@@ -208,7 +208,8 @@ static void identify_negative() {
 			if(i == 0 ||
 			   tokens[i - 1].type == '(' ||
 			   get_precedence(tokens[i - 1].type) != -1 ||
-			   tokens[i - 1].type == NEG) {
+			   tokens[i - 1].type == NEG||
+			   tokens[i - 1].type == '!') {
 				tokens[i].type = NEG;
 			}
 		}
@@ -333,8 +334,6 @@ static uint32_t eval(int p, int q, bool *success) {
 
 	if(op == -1) {
 		if(tokens[p].type == NEG) {
-			uint32_t val;
-
 			val = eval(p + 1, q, success);
 
 			if(!(*success)) {
@@ -342,6 +341,16 @@ static uint32_t eval(int p, int q, bool *success) {
 			}
 
 			return 0 - val;
+		}
+
+		if(tokens[p].type == '!') {
+			val = eval(p + 1, q, success);
+
+			if(!(*success)) {
+				return 0;
+			}
+
+			return !val;
 		}
 
 		*success = false;
