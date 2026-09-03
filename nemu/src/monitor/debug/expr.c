@@ -108,10 +108,12 @@ static bool make_token(char *e) {
 					case HEX:
 					case REG:
         				Assert(nr_token < 32, "too many tokens");
-        				Assert(substr_len < 32, "number is too long");
+        				Assert(substr_len < sizeof(tokens[nr_token].str),
+           						"token string is too long");
 
-        				tokens[nr_token].type = NUM;
-        				strncpy(tokens[nr_token].str, substr_start, substr_len);
+        				tokens[nr_token].type = rules[i].token_type;
+        				
+						strncpy(tokens[nr_token].str, substr_start, substr_len);
         				tokens[nr_token].str[substr_len] = '\0';
 
         				nr_token++;
