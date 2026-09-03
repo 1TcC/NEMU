@@ -119,6 +119,169 @@ static bool make_token(char *e) {
 	return true; 
 }
 
+static int check_parentheses(int p, int q) {
+	int i;
+	int balance = 0;
+	bool surrounded = true;
+
+	for(i = p; i <= q; i ++) {
+		if(tokens[i].type == '(') {
+			balance ++;
+		}
+		else if(tokens[i].type == ')') {
+			balance --;
+		}
+
+		if(balance < 0) {
+			return -1;
+		}
+
+		if(balance == 0 && i < q) {
+			surrounded = false;
+		}
+	}
+
+	if(balance != 0) {
+		return -1;
+	}
+
+	if(tokens[p].type == '(' &&
+	   tokens[q].type == ')' &&
+	   surrounded) {
+		return 1;
+	}
+
+	return 0;
+}
+
+static int get_precedence(int type) {
+	switch(type) {
+		case '+':
+		case '-':
+			return 1;
+
+		case '*':
+		case '/':
+			return 2;
+
+		default:
+			return -1;
+	}
+}
+
+static int find_dominant_operator(int p, int q) {
+	int i;
+	int op = -1;
+	int min_precedence = 3;
+	int parentheses = 0;
+
+	for(i = p; i <= q; i ++) {
+
+		if(tokens[i].type == '(') {
+			parentheses ++;
+			continue;
+		}
+
+		if(tokens[i].type == ')') {
+			parentheses --;
+			continue;
+		}
+
+		if(parentheses != 0) {
+			continue;
+		}
+
+		int precedence = get_precedence(tokens[i].type);
+
+		if(precedence == -1) {
+			continue;
+		}
+
+		if(precedence <= min_precedence) {    
+			min_precedence = precedence;
+			op = i;
+		}
+	}
+
+	return op;
+}
+
+static uint32_t eval(int p, int q, bool *success) {
+	int op;
+	int paren_ret;
+	uint32_t val1, val2;
+	uint32_t val;
+
+	if(p > q) {
+		*success = false;
+		return 0;
+	}
+
+	if(p == q) {
+		if(tokens[p].type != NUM) {
+			*success = false;
+			return 0;
+		}
+
+		if(sscanf(tokens[p].str, "%u", &val) != 1) {
+			*success = false;
+			return 0;
+		}
+
+		return val;
+	}
+
+	paren_ret = check_parentheses(p, q);
+
+	if(paren_ret == -1) {
+		*success = false;
+		return 0;
+	}
+
+	if(paren_ret == 1) {
+		return eval(p + 1, q - 1, success);
+	}
+
+	op = find_dominant_operator(p, q);
+
+	if(op == -1) {
+		*success = false;
+		return 0;
+	}
+
+	val1 = eval(p, op - 1, success);
+	if(!(*success)) {
+		return 0;
+	}
+
+	val2 = eval(op + 1, q, success);
+	if(!(*success)) {
+		return 0;
+	}
+
+	switch(tokens[op].type) {
+		case '+':
+			return val1 + val2;
+
+		case '-':
+			return val1 - val2;
+
+		case '*':
+			return val1 * val2;
+
+		case '/':
+			if(val2 == 0) {
+				*success = false;
+				return 0;
+			}
+			return val1 / val2;
+
+		default:
+			*success = false;
+			return 0;
+	}
+}
+
 uint32_t expr(char *e, bool *success) {
 	if(!make_token(e)) {
 		*success = false;
@@ -126,7 +289,7 @@ uint32_t expr(char *e, bool *success) {
 	}
 
 	/* TODO: Insert codes to evaluate the expression. */
-	panic("please implement me");
-	return 0;
+	*success = true;
+	return eval(0, nr_token - 1, success);
 }
 
