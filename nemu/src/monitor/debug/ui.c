@@ -101,6 +101,14 @@ static int cmd_p(char *args){
 		printf("%u\n", result);
 	}
 	return 0;
+
+	result = expr(args, &success);
+
+	printf("DEBUG: success = %d, result = %u\n", success, result);
+
+	if (success){
+		printf("%u\n", result);
+	}
 }
 
 static int cmd_help(char *args);
