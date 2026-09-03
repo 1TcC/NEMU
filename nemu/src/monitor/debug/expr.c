@@ -315,27 +315,9 @@ uint32_t expr(char *e, bool *success) {
 		return 0;
 	}
 
-	/* TODO: Insert codes to evaluate the expression. */
-	
 	identify_negative();
-	*success = true;
-	return eval(0, nr_token - 1, success);
-
-	uint32_t expr(char *e, bool *success) {
-	if(!make_token(e)) {
-		*success = false;
-		return 0;
-	}
-
-	printf("before: tokens[0].type = %d\n", tokens[0].type);
-
-	identify_negative();
-
-	printf("after : tokens[0].type = %d, NEG = %d\n",
-			tokens[0].type, NEG);
 
 	*success = true;
 	return eval(0, nr_token - 1, success);
-}
 }
 
