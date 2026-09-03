@@ -15,7 +15,8 @@ enum {
 	REG,
 	NEQ,
 	AND,
-	OR
+	OR,
+	DEREF
 	/* TODO: Add more token types */
 
 };
@@ -216,6 +217,23 @@ static void identify_negative() {
 	}
 }
 
+static void identify_dereference() {
+	int i;
+
+	for(i = 0; i < nr_token; i ++) {
+		if(tokens[i].type == '*') {
+			if(i == 0 ||
+			   tokens[i - 1].type == '(' ||
+			   get_precedence(tokens[i - 1].type) != -1 ||
+			   tokens[i - 1].type == NEG ||
+			   tokens[i - 1].type == '!' ||
+			   tokens[i - 1].type == DEREF) {
+				tokens[i].type = DEREF;
+			}
+		}
+	}
+}
+
 static int find_dominant_operator(int p, int q) {
 	int i;
 	int op = -1;
@@ -353,6 +371,16 @@ static uint32_t eval(int p, int q, bool *success) {
 			return !val;
 		}
 
+		if(tokens[p].type == DEREF) {
+			val = eval(p + 1, q, success);
+
+			if(!(*success)) {		
+				return 0;
+			}
+
+			return swaddr_read(val, 4);
+		}		
+
 		*success = false;
 		return 0;
 	}
@@ -409,6 +437,7 @@ uint32_t expr(char *e, bool *success) {
 	}
 
 	identify_negative();
+	identify_dereference();
 
 	*success = true;
 	return eval(0, nr_token - 1, success);
