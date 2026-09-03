@@ -375,6 +375,18 @@ static uint32_t eval(int p, int q, bool *success) {
 			}
 			return val1 / val2;
 
+		case EQ:
+			return val1 == val2;
+
+		case NEQ:
+			return val1 != val2;
+
+		case AND:
+			return val1 && val2;
+
+		case OR:
+			return val1 || val2;
+
 		default:
 			*success = false;
 			return 0;
