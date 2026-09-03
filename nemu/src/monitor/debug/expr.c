@@ -260,6 +260,18 @@ static uint32_t eval(int p, int q, bool *success) {
 	op = find_dominant_operator(p, q);
 
 	if(op == -1) {
+		if(tokens[p].type == NEG) {
+			uint32_t val;
+
+			val = eval(p + 1, q, success);
+
+			if(!(*success)) {
+				return 0;
+			}
+
+			return 0 - val;
+		}
+
 		*success = false;
 		return 0;
 	}
@@ -308,5 +320,22 @@ uint32_t expr(char *e, bool *success) {
 	identify_negative();
 	*success = true;
 	return eval(0, nr_token - 1, success);
+
+	uint32_t expr(char *e, bool *success) {
+	if(!make_token(e)) {
+		*success = false;
+		return 0;
+	}
+
+	printf("before: tokens[0].type = %d\n", tokens[0].type);
+
+	identify_negative();
+
+	printf("after : tokens[0].type = %d, NEG = %d\n",
+			tokens[0].type, NEG);
+
+	*success = true;
+	return eval(0, nr_token - 1, success);
+}
 }
 
