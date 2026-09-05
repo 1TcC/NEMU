@@ -87,7 +87,7 @@ static int cmd_info(char *args){
 	else if(strcmp(args, "w") == 0) {
 		print_watchpoints();
 	}
-	
+
 	return 0;
 }
 
@@ -129,6 +129,29 @@ static int cmd_p(char *args){
 	return 0;
 }
 
+static int cmd_d(char *args) {
+	int no;
+
+	if(args == NULL) {
+		printf("Usage: d N\n");
+		return 0;
+	}
+
+	if(sscanf(args, "%d", &no) != 1) {
+		printf("Usage: d N\n");
+		return 0;
+	}
+
+	if(delete_watchpoint(no)) {
+		printf("Watchpoint %d deleted.\n", no);
+	}
+	else {
+		printf("Watchpoint %d not found.\n", no);
+	}
+
+	return 0;
+}
+
 static int cmd_help(char *args);
 
 static struct {
@@ -144,6 +167,7 @@ static struct {
 	{ "x", "Scan memory", cmd_x },
 	{ "p", "Evaluate expression", cmd_p },
 	{ "w", "Set a watchpoint", cmd_w },
+	{ "d", "Delete a watchpoint", cmd_d },
 	/* TODO: Add more commands */
 
 };

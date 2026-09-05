@@ -103,3 +103,18 @@ void print_watchpoints() {
 		wp = wp->next;
 	}
 }
+
+bool delete_watchpoint(int no) {
+	WP *wp = head;
+
+	while(wp != NULL) {
+		if(wp->NO == no) {
+			free_wp(wp);
+			return true;
+		}
+
+		wp = wp->next;
+	}
+
+	return false;
+}
