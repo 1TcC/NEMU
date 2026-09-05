@@ -1,5 +1,6 @@
 #include "monitor/watchpoint.h"
 #include "monitor/expr.h"
+#include <string.h>
 
 #define NR_WP 32
 
@@ -59,4 +60,26 @@ void free_wp(WP *wp) {
 
 	wp->next = free_;
 	free_ = wp;
+}
+
+WP* add_watchpoint(char *e) {
+	bool success;
+	uint32_t value;
+	WP *wp;
+
+	assert(e != NULL);
+	assert(strlen(e) < 128);
+
+	value = expr(e, &success);
+
+	if(!success) {
+		return NULL;
+	}
+
+	wp = new_wp();
+
+	strcpy(wp->expr, e);
+	wp->value = value;
+
+	return wp;
 }
