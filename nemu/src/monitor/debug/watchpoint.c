@@ -83,3 +83,23 @@ WP* add_watchpoint(char *e) {
 
 	return wp;
 }
+
+void print_watchpoints() {
+	WP *wp = head;
+
+	if(wp == NULL) {
+		printf("No watchpoints.\n");
+		return;
+	}
+
+	printf("Num\tValue\t\tExpression\n");
+
+	while(wp != NULL) {
+		printf("%d\t%u\t\t%s\n",
+		       wp->NO,
+		       wp->value,
+		       wp->expr);
+
+		wp = wp->next;
+	}
+}
