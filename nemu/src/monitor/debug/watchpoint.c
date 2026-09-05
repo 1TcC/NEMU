@@ -118,3 +118,28 @@ bool delete_watchpoint(int no) {
 
 	return false;
 }
+
+bool check_watchpoints() {
+	WP *wp = head;
+	bool triggered = false;
+
+	while(wp != NULL) {
+		bool success;
+		uint32_t new_value;
+
+		new_value = expr(wp->expr, &success);
+
+		if(success && new_value != wp->value) {
+			printf("Watchpoint %d: %s\n", wp->NO, wp->expr);
+			printf("Old value = %u\n", wp->value);
+			printf("New value = %u\n", new_value);
+
+			wp->value = new_value;
+			triggered = true;
+		}
+
+		wp = wp->next;
+	}
+
+	return triggered;
+}
