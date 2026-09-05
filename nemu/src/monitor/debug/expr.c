@@ -237,7 +237,7 @@ static void identify_dereference() {
 static int find_dominant_operator(int p, int q) {
 	int i;
 	int op = -1;
-	int min_precedence = 3;
+	int min_precedence = 6;
 	int parentheses = 0;
 
 	for(i = p; i <= q; i ++) {
