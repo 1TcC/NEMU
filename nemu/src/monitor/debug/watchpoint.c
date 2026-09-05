@@ -35,3 +35,28 @@ WP* new_wp() {
 
 	return wp;
 }
+
+void free_wp(WP *wp) {
+	WP *p;
+
+	assert(wp != NULL);
+
+	if(head == wp) {
+		head = head->next;
+	}
+	else {
+		p = head;
+
+		while(p != NULL &&
+		      p->next != wp) {
+			p = p->next;
+		}
+
+		assert(p != NULL);
+
+		p->next = wp->next;
+	}
+
+	wp->next = free_;
+	free_ = wp;
+}
