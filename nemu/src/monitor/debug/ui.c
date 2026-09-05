@@ -47,6 +47,26 @@ static int cmd_si(char *args){
 	return 0;
 }
 
+static int cmd_w(char *args) {
+	WP *wp;
+
+	if(args == NULL) {
+		printf("Usage: w EXPR\n");
+		return 0;
+	}
+
+	wp = add_watchpoint(args);
+
+	if(wp == NULL) {
+		printf("Invalid expression.\n");
+		return 0;
+	}
+
+	printf("Watchpoint %d: %s\n", wp->NO, wp->expr);
+
+	return 0;
+}
+
 static int cmd_info(char *args){
 	if (args == NULL){
 		return 0;
@@ -119,6 +139,7 @@ static struct {
 	{ "info", "Print register", cmd_info },
 	{ "x", "Scan memory", cmd_x },
 	{ "p", "Evaluate expression", cmd_p },
+	{ "w", "Set a watchpoint", cmd_w },
 	/* TODO: Add more commands */
 
 };
