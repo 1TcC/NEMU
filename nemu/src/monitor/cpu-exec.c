@@ -1,6 +1,7 @@
 #include "monitor/monitor.h"
 #include "cpu/helper.h"
 #include <setjmp.h>
+#include "monitor/watchpoint.h"
 
 /* The assembly code of instructions executed is only output to the screen
  * when the number of instructions executed is less than this value.
@@ -56,7 +57,7 @@ void cpu_exec(volatile uint32_t n) {
 			fputc('.', stderr);
 		}
 #endif
-
+		swaddr_t old_eip = cpu.eip;
 		/* Execute one instruction, including instruction fetch,
 		 * instruction decode, and the actual execution. */
 		int instr_len = exec(cpu.eip);
@@ -73,7 +74,9 @@ void cpu_exec(volatile uint32_t n) {
 #endif
 
 		/* TODO: check watchpoints here. */
-
+		if(check_watchpoints(old_eip)) {
+			nemu_state = STOP;
+		}
 
 #ifdef HAS_DEVICE
 		extern void device_update();

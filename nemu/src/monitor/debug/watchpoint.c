@@ -119,7 +119,7 @@ bool delete_watchpoint(int no) {
 	return false;
 }
 
-bool check_watchpoints() {
+bool check_watchpoints(swaddr_t eip) {
 	WP *wp = head;
 	bool triggered = false;
 
@@ -130,7 +130,12 @@ bool check_watchpoints() {
 		new_value = expr(wp->expr, &success);
 
 		if(success && new_value != wp->value) {
-			printf("Watchpoint %d: %s\n", wp->NO, wp->expr);
+			printf("Hint watchpoint %d at address 0x%08x\n",
+			       wp->NO, eip);
+
+			printf("Watchpoint %d: %s\n",
+			       wp->NO, wp->expr);
+
 			printf("Old value = %u\n", wp->value);
 			printf("New value = %u\n", new_value);
 
