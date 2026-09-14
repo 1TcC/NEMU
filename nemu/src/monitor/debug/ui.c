@@ -8,6 +8,7 @@
 #include <readline/history.h>
 
 void cpu_exec(uint32_t);
+const char *find_func_name(uint32_t addr);
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 char* rl_gets() {
@@ -152,6 +153,33 @@ static int cmd_d(char *args) {
 	return 0;
 }
 
+static int cmd_bt(char *args) {
+	swaddr_t ebp = cpu.ebp;
+	swaddr_t eip = cpu.eip;
+	int frame = 0;
+
+	while(ebp != 0) {
+		uint32_t arg0 = swaddr_read(ebp + 8, 4);
+		uint32_t arg1 = swaddr_read(ebp + 12, 4);
+		uint32_t arg2 = swaddr_read(ebp + 16, 4);
+		uint32_t arg3 = swaddr_read(ebp + 20, 4);
+
+		printf("#%d  0x%08x in %s "
+		       "(0x%08x, 0x%08x, 0x%08x, 0x%08x)\n",
+		       frame,
+		       eip,
+		       find_func_name(eip),
+		       arg0, arg1, arg2, arg3);
+
+		eip = swaddr_read(ebp + 4, 4);
+		ebp = swaddr_read(ebp, 4);
+
+		frame ++;
+	}
+
+	return 0;
+}
+
 static int cmd_help(char *args);
 
 static struct {
@@ -168,6 +196,7 @@ static struct {
 	{ "p", "Evaluate expression", cmd_p },
 	{ "w", "Set a watchpoint", cmd_w },
 	{ "d", "Delete a watchpoint", cmd_d },
+	{ "bt", "Print stack frame chain", cmd_bt },
 	/* TODO: Add more commands */
 
 };

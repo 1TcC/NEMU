@@ -1,6 +1,10 @@
 #include "trap.h"
 
 int add(int a, int b) {
+	if(a == 0 && b == 0) {
+		set_bp();
+	}
+
 	int c = a + b;
 	return c;
 }

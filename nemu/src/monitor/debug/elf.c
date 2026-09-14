@@ -96,3 +96,18 @@ bool find_var_addr(const char *name, uint32_t *addr) {
 	return false;
 }
 
+const char *find_func_name(uint32_t addr) {
+	int i;
+
+	for(i = 0; i < nr_symtab_entry; i ++) {
+		if(ELF32_ST_TYPE(symtab[i].st_info) == STT_FUNC &&
+		   symtab[i].st_shndx != SHN_UNDEF &&
+		   addr >= symtab[i].st_value &&
+		   addr < symtab[i].st_value + symtab[i].st_size) {
+			return strtab + symtab[i].st_name;
+		}
+	}
+
+	return "??";
+}
+
