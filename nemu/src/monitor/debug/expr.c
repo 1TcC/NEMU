@@ -6,6 +6,8 @@
 #include <sys/types.h>
 #include <regex.h>
 
+bool find_var_addr(const char *name, uint32_t *addr);
+
 enum {
 	NOTYPE = 256,
 	EQ,
@@ -16,7 +18,8 @@ enum {
 	NEQ,
 	AND,
 	OR,
-	DEREF
+	DEREF,
+	VAR
 	/* TODO: Add more token types */
 
 };
@@ -47,7 +50,8 @@ static struct rule {
 
 	{"0x[0-9a-fA-F]+", HEX},
 	{"[0-9]+", NUM},
-	{"\\$[a-zA-Z][a-zA-Z0-9]*", REG}
+	{"\\$[a-zA-Z][a-zA-Z0-9]*", REG},
+	{"[a-zA-Z_][a-zA-Z0-9_]*", VAR}
 };
 
 #define NR_REGEX (sizeof(rules) / sizeof(rules[0]) )
@@ -108,6 +112,7 @@ static bool make_token(char *e) {
     				case NUM:
 					case HEX:
 					case REG:
+					case VAR:
         				Assert(nr_token < 32, "too many tokens");
         				Assert(substr_len < sizeof(tokens[nr_token].str),
            						"token string is too long");
@@ -333,6 +338,18 @@ static uint32_t eval(int p, int q, bool *success) {
     		*success = false;
     		return 0;
 		}
+
+		if(tokens[p].type == VAR) {
+			uint32_t addr;
+
+			if(find_var_addr(tokens[p].str, &addr)) {
+				return addr;
+			}
+
+			*success = false;
+			return 0;
+		}	
+			
 		*success = false;
 		return 0;
 	}

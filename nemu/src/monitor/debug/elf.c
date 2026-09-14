@@ -81,3 +81,18 @@ void load_elf_tables(int argc, char *argv[]) {
 	fclose(fp);
 }
 
+bool find_var_addr(const char *name, uint32_t *addr) {
+	int i;
+
+	for(i = 0; i < nr_symtab_entry; i ++) {
+		if(ELF32_ST_TYPE(symtab[i].st_info) == STT_OBJECT &&
+		   symtab[i].st_shndx != SHN_UNDEF &&
+		   strcmp(strtab + symtab[i].st_name, name) == 0) {
+			*addr = symtab[i].st_value;
+			return true;
+		}
+	}
+
+	return false;
+}
+
