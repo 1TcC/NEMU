@@ -1,12 +1,8 @@
 #include "trap.h"
 
 int add(int a, int b) {
-	if(a == 0 && b == 0) {
-		set_bp();
-	}
-
-	int c = a + b;
-	return c;
+    int c = a + b;
+    return c;
 }
 
 int test_data[] = {0, 1, 2, 0x7fffffff, 0x80000000, 0x80000001, 0xfffffffe, 0xffffffff};
