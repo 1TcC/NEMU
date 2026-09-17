@@ -1,6 +1,8 @@
 #include "cpu/exec/helper.h"
 #include "monitor/monitor.h"
 
+extern void print_cache_stat();
+
 make_helper(inv) {
 	/* invalid opcode */
 
@@ -32,6 +34,10 @@ make_helper(nemu_trap) {
 		   	break;
 
 		default:
+			if(cpu.eax == 0) {
+				print_cache_stat();
+			}
+
 			printf("\33[1;31mnemu: HIT %s TRAP\33[0m at eip = 0x%08x\n\n",
 					(cpu.eax == 0 ? "GOOD" : "BAD"), cpu.eip);
 			nemu_state = END;
