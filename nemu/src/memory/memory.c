@@ -1,5 +1,6 @@
 #include "common.h"
 #include <stdlib.h>
+#include "cpu/reg.h"
 
 uint32_t dram_read(hwaddr_t, size_t);
 void dram_write(hwaddr_t, size_t, uint32_t);
@@ -345,4 +346,32 @@ void swaddr_write(swaddr_t addr,
 #endif
 
 	lnaddr_write(addr, len, data);
+}
+
+void load_sreg(uint8_t sreg) {
+	SegReg *reg = &cpu.sreg[sreg];
+
+	assert(reg->ti == 0);
+
+	lnaddr_t desc_addr =
+		cpu.gdtr.base + reg->index * 8;
+
+	uint32_t low = lnaddr_read(desc_addr, 4);
+	uint32_t high = lnaddr_read(desc_addr + 4, 4);
+
+	assert((high & 0x00008000) != 0);
+
+	reg->base =
+		((low >> 16) & 0xffff)
+		| ((high & 0x000000ff) << 16)
+		| (high & 0xff000000);
+
+	reg->limit =
+		(low & 0xffff)
+		| (((high >> 16) & 0xf) << 16);
+
+	if(high & 0x00800000) {
+		reg->limit =
+			(reg->limit << 12) | 0xfff;
+	}
 }

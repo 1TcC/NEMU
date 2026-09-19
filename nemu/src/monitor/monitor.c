@@ -89,6 +89,10 @@ void restart() {
 	cpu.eip = ENTRY_START;
 	cpu.eflags.val = 0x00000002;
 	cpu.cr0.val = 0;
+
+	cpu.cs.val = 0;
+	cpu.cs.base = 0;
+	cpu.cs.limit = 0xffffffff;
 	
 	/* Initialize DRAM. */
 	init_ddr3();

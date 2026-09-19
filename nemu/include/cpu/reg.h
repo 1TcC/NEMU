@@ -14,6 +14,28 @@ enum { R_AL, R_CL, R_DL, R_BL, R_AH, R_CH, R_DH, R_BH };
  * For more details about the register encoding scheme, see i386 manual.
  */
 
+enum {
+	R_ES = 0,
+	R_CS,
+	R_SS,
+	R_DS
+};
+
+typedef struct {
+	union {
+		uint16_t val;
+
+		struct {
+			uint16_t rpl   : 2;
+			uint16_t ti    : 1;
+			uint16_t index : 13;
+		};
+	};
+
+	uint32_t base;
+	uint32_t limit;
+} SegReg;
+
 typedef struct {
      union {
 		union{
@@ -72,6 +94,17 @@ typedef struct {
 		uint32_t val;
 	} cr0;
 
+	union {
+		SegReg sreg[4];
+
+		struct {
+			SegReg es;
+			SegReg cs;
+			SegReg ss;
+			SegReg ds;
+		};
+	};
+	
 } CPU_state;
 
 extern CPU_state cpu;
