@@ -49,8 +49,8 @@ make_helper(lgdt) {
 
 	int len = load_addr(eip + 1, &m, op_src);
 
-	cpu.gdtr.limit = swaddr_read(op_src->addr, 2);
-	cpu.gdtr.base = swaddr_read(op_src->addr + 2, 4);
+	cpu.gdtr.limit = swaddr_read(op_src->addr, 2, op_src->sreg);
+	cpu.gdtr.base = swaddr_read(op_src->addr + 2, 4, op_src->sreg);
 
 	print_asm("lgdt %s", op_src->str);
 

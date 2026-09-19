@@ -4,7 +4,7 @@
 
 static void do_execute() {
     cpu.esp -= 4;
-    swaddr_write(cpu.esp, 4, cpu.eip + 1 + DATA_BYTE);
+    swaddr_write(cpu.esp, 4, cpu.eip + 1 + DATA_BYTE, R_SS);
 
     cpu.eip += op_src->val;
 

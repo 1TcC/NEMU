@@ -8,6 +8,7 @@ enum { OP_TYPE_REG, OP_TYPE_MEM, OP_TYPE_IMM };
 typedef struct {
 	uint32_t type;
 	size_t size;
+	uint8_t sreg;
 	union {
 		uint32_t reg;
 		swaddr_t addr;

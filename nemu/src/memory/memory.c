@@ -324,30 +324,39 @@ void lnaddr_write(lnaddr_t addr,
 	hwaddr_write(addr, len, data);
 }
 
+lnaddr_t seg_translate(swaddr_t addr, size_t len, uint8_t sreg) {
+	assert(sreg <= R_DS);
 
-uint32_t swaddr_read(swaddr_t addr, size_t len) {
+	uint64_t end = (uint64_t)addr + len - 1;
+	assert(end <= cpu.sreg[sreg].limit);
+
+	return cpu.sreg[sreg].base + addr;
+}
+
+uint32_t swaddr_read(swaddr_t addr, size_t len, uint8_t sreg) {
 #ifdef DEBUG
-	assert(len == 1 ||
-			len == 2 ||
-			len == 4);
+	assert(len == 1 || len == 2 || len == 4);
 #endif
+
+	if(cpu.cr0.PE) {
+		return lnaddr_read(seg_translate(addr, len, sreg), len);
+	}
 
 	return lnaddr_read(addr, len);
 }
 
-
-void swaddr_write(swaddr_t addr,
-		size_t len, uint32_t data) {
-
+void swaddr_write(swaddr_t addr, size_t len, uint32_t data, uint8_t sreg) {
 #ifdef DEBUG
-	assert(len == 1 ||
-			len == 2 ||
-			len == 4);
+	assert(len == 1 || len == 2 || len == 4);
 #endif
+
+	if(cpu.cr0.PE) {
+		lnaddr_write(seg_translate(addr, len, sreg), len, data);
+		return;
+	}
 
 	lnaddr_write(addr, len, data);
 }
-
 void load_sreg(uint8_t sreg) {
 	SegReg *reg = &cpu.sreg[sreg];
 

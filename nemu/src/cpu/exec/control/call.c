@@ -9,7 +9,7 @@ make_helper(call_rm_l) {
     uint32_t target = op_src->val;
 
     cpu.esp -= 4;
-    swaddr_write(cpu.esp, 4, eip + len);
+    swaddr_write(cpu.esp, 4, eip + len, R_SS);
 
     cpu.eip = target - len;
 

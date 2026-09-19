@@ -3,7 +3,7 @@
 #define instr pop
 
 static void do_execute() {
-	DATA_TYPE value = MEM_R(cpu.esp);
+	DATA_TYPE value = MEM_R(cpu.esp, R_SS);
 
 	cpu.esp += DATA_BYTE;
 

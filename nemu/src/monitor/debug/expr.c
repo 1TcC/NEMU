@@ -395,7 +395,7 @@ static uint32_t eval(int p, int q, bool *success) {
 				return 0;
 			}
 
-			return swaddr_read(val, 4);
+			return swaddr_read(val, 4, R_DS);
 		}		
 
 		*success = false;

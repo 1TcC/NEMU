@@ -1,7 +1,7 @@
 #include "cpu/exec/helper.h"
 
 make_helper(ret) {
-	uint32_t return_addr = swaddr_read(cpu.esp, 4);
+	uint32_t return_addr = swaddr_read(cpu.esp, 4, R_SS);
 
 	cpu.esp += 4;
 	cpu.eip = return_addr - 1;
@@ -14,7 +14,7 @@ make_helper(ret) {
 make_helper(ret_i_w) {
     uint16_t imm = instr_fetch(eip + 1, 2);
 
-    uint32_t return_addr = swaddr_read(cpu.esp, 4);
+    uint32_t return_addr = swaddr_read(cpu.esp, 4, R_SS);
     cpu.esp += 4;
     cpu.esp += imm;
 

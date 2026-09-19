@@ -78,7 +78,7 @@ make_helper(mov_rm2sreg_w) {
 		rm.size = 2;
 
 		len = load_addr(eip + 1, &m, &rm);
-		selector = swaddr_read(rm.addr, 2);
+		selector = swaddr_read(rm.addr, 2, rm.sreg);
 
 		static const char *sreg_name[] = {
 			"es", "cs", "ss", "ds"

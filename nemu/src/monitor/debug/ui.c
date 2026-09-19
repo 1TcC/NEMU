@@ -107,7 +107,7 @@ static int cmd_x(char *args){
 
 	for (i=0; i<n; i++){
 		printf("0x%08x: 0x%08x\n",
-                addr, swaddr_read(addr, 4));
+                addr, swaddr_read(addr, 4, R_DS));
         addr += 4;
 	}
 	return 0;
@@ -159,10 +159,10 @@ static int cmd_bt(char *args) {
 	int frame = 0;
 
 	while(ebp != 0) {
-		uint32_t arg0 = swaddr_read(ebp + 8, 4);
-		uint32_t arg1 = swaddr_read(ebp + 12, 4);
-		uint32_t arg2 = swaddr_read(ebp + 16, 4);
-		uint32_t arg3 = swaddr_read(ebp + 20, 4);
+		uint32_t arg0 = swaddr_read(ebp + 8, 4, R_SS);
+		uint32_t arg1 = swaddr_read(ebp + 12, 4, R_SS);
+		uint32_t arg2 = swaddr_read(ebp + 16, 4, R_SS);
+		uint32_t arg3 = swaddr_read(ebp + 20, 4, R_SS);
 
 		printf("#%d  0x%08x in %s "
 		       "(0x%08x, 0x%08x, 0x%08x, 0x%08x)\n",
@@ -171,8 +171,8 @@ static int cmd_bt(char *args) {
 		       find_func_name(eip),
 		       arg0, arg1, arg2, arg3);
 
-		eip = swaddr_read(ebp + 4, 4);
-		ebp = swaddr_read(ebp, 4);
+		eip = swaddr_read(ebp + 4, 4, R_SS);
+		ebp = swaddr_read(ebp, 4, R_SS);
 
 		frame ++;
 	}
