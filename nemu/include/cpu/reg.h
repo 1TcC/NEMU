@@ -54,6 +54,11 @@ typedef struct {
 		uint32_t val;
 	} eflags;
 
+	struct {
+		uint16_t limit;
+		uint32_t base;
+	} gdtr;
+
 } CPU_state;
 
 extern CPU_state cpu;
