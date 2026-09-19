@@ -1,5 +1,6 @@
 #include "cpu/exec/helper.h"
 #include "cpu/decode/modrm.h"
+#include "memory/memory.h"
 
 #define DATA_BYTE 1
 #include "mov-template.h"
@@ -48,4 +49,49 @@ make_helper(mov_r2cr_l) {
 	print_asm("movl %%%s,%%cr0", regsl[m.R_M]);
 
 	return 2;
+}
+
+make_helper(mov_rm2sreg_w) {
+	ModR_M m;
+	m.val = instr_fetch(eip + 1, 1);
+
+	assert(m.reg <= R_DS);
+	assert(m.reg != R_CS);
+
+	uint16_t selector;
+	int len;
+
+	if(m.mod == 3) {
+		selector = reg_w(m.R_M);
+		len = 1;
+
+		static const char *sreg_name[] = {
+			"es", "cs", "ss", "ds"
+		};
+
+		print_asm("movw %%%s,%%%s",
+				regsw[m.R_M],
+				sreg_name[m.reg]);
+	}
+	else {
+		Operand rm;
+		rm.size = 2;
+
+		len = load_addr(eip + 1, &m, &rm);
+		selector = swaddr_read(rm.addr, 2);
+
+		static const char *sreg_name[] = {
+			"es", "cs", "ss", "ds"
+		};
+
+		print_asm("movw %s,%%%s",
+				rm.str,
+				sreg_name[m.reg]);
+	}
+
+	cpu.sreg[m.reg].val = selector;
+
+	load_sreg(m.reg);
+
+	return len + 1;
 }
